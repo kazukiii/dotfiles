@@ -154,6 +154,7 @@ export PGDATA=/usr/local/var/postgres
 export PATH="/Users/kazuki/anaconda/bin:$PATH"
 
 export PATH="$(brew --prefix homebrew/php/php71)/bin:$PATH"
+
 # -------------------------------------
 # キーバインド
 # -------------------------------------
