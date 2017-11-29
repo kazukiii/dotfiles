@@ -153,6 +153,7 @@ export PGDATA=/usr/local/var/postgres
 # added by Anaconda3 4.4.0 installer
 export PATH="/Users/kazuki/anaconda/bin:$PATH"
 
+export PATH="$(brew --prefix homebrew/php/php71)/bin:$PATH"
 # -------------------------------------
 # キーバインド
 # -------------------------------------
