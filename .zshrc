@@ -140,6 +140,9 @@ alias py='python'
 alias color='perl ~/.colors256.pl'
 alias root='root -l'
 alias global_ip='curl ipecho.net/plain; echo'
+alias jst='sudo rm /etc/localtime; sudo ln -s /usr/share/zoneinfo/Japan /etc/localtime'
+alias utc='sudo rm /etc/localtime; sudo ln -s /usr/share/zoneinfo/UTC /etc/localtime'
+
 # function git(){hub "$@"} # for zsh
 eval "$(hub alias -s)" # for bashみたいだけどこっちのがうまくいってる
 
@@ -153,7 +156,8 @@ export PGDATA=/usr/local/var/postgres
 # added by Anaconda3 4.4.0 installer
 export PATH="/Users/kazuki/anaconda/bin:$PATH"
 
-export PATH="$(brew --prefix homebrew/php/php71)/bin:$PATH"
+export PATH="$(brew --prefix homebrew/core/php@7.1)/bin:$PATH"
+export PATH=$PATH:~/.nodebrew/current/bin
 
 # -------------------------------------
 # キーバインド
