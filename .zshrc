@@ -142,6 +142,8 @@ alias root='root -l'
 alias global_ip='curl ipecho.net/plain; echo'
 alias jst='sudo rm /etc/localtime; sudo ln -s /usr/share/zoneinfo/Japan /etc/localtime'
 alias utc='sudo rm /etc/localtime; sudo ln -s /usr/share/zoneinfo/UTC /etc/localtime'
+alias gst='git status'
+alias gco='git checkout'
 
 # function git(){hub "$@"} # for zsh
 eval "$(hub alias -s)" # for bashみたいだけどこっちのがうまくいってる
