@@ -13,7 +13,6 @@ export LC_ALL=en_US.UTF-8
 # export PAGER=/usr/local/bin/vimpager
 # export MANPAGER=/usr/local/bin/vimpager
 
-
 # -------------------------------------
 # zshのオプション
 # -------------------------------------
@@ -49,6 +48,9 @@ setopt auto_pushd
 
 # ディレクトリ名を入力するだけでcdできるようにする
 setopt auto_cd
+
+# curlとか叩いたときのno matches foundエラーをなくす
+setopt nonomatch
 
 # -------------------------------------
 # パス
@@ -109,6 +111,30 @@ PROMPT+="%% "
 
 RPROMPT="[%*]"
 
+# 補完で大文字を区別しない
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# 補完絞り込み設定
+autoload -Uz compinit && compinit -u
+zstyle ':completion:*' menu select interactive
+setopt menu_complete
+
+# 補完用のキーバインド設定
+zmodload zsh/complist                                         # "bindkey -M menuselect"設定できるようにするためのモジュールロード
+bindkey -v '^a' beginning-of-line                             # 行頭へ(menuselectでは補完候補の先頭へ)
+bindkey -v '^b' backward-char                                 # 1文字左へ(menuselectでは補完候補1つ左へ)
+bindkey -v '^e' end-of-line                                   # 行末へ(menuselectでは補完候補の最後尾へ)
+bindkey -v '^f' forward-char                                  # 1文字右へ(menuselectでは補完候補1つ右へ)
+bindkey -v '^h' backward-delete-char                          # 1文字削除(menuselectでは絞り込みの1文字削除)
+bindkey -v '^i' expand-or-complete                            # 補完開始
+bindkey -M menuselect '^g' .send-break                        # send-break2回分の効果
+bindkey -M menuselect '^i' forward-char                       # 補完候補1つ右へ
+bindkey -M menuselect '^j' .accept-line                       # accept-line2回分の効果
+bindkey -M menuselect '^k' accept-and-infer-next-history      # 次の補完メニューを表示する
+bindkey -M menuselect '^n' down-line-or-history               # 補完候補1つ下へ
+bindkey -M menuselect '^p' up-line-or-history                 # 補完候補1つ上へ
+bindkey -M menuselect '^r' history-incremental-search-forward # 補完候補内インクリメンタルサーチ
+
 # -------------------------------------
 # エイリアス
 # -------------------------------------
@@ -144,6 +170,21 @@ alias jst='sudo rm /etc/localtime; sudo ln -s /usr/share/zoneinfo/Japan /etc/loc
 alias utc='sudo rm /etc/localtime; sudo ln -s /usr/share/zoneinfo/UTC /etc/localtime'
 alias gst='git status'
 alias gco='git checkout'
+alias console='cd ~/working_space/air-closet/air-closet-console/'
+alias socket='cd ~/working_space/air-closet/air-closet-console-socket/'
+alias pickss='cd ~/working_space/air-closet/pickss/'
+alias warehouse='cd ~/working_space/air-closet/air-closet-warehouse/'
+alias migration='cd ~/working_space/air-closet/air-closet-migration/'
+alias node-batch='cd ~/working_space/air-closet/air-closet-node-batch/'
+alias universal='cd ~/working_space/air-closet/universal/'
+alias ssr='cd ~/working_space/air-closet/air-closet-ssr/'
+alias web='cd ~/working_space/air-closet/air-closet-web/'
+alias api='cd ~/working_space/air-closet/air-closet-api'
+alias simulator='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
+alias styling-console='cd ~/working_space/air-closet/air-closet-styling-console/'
+alias styling-api='cd ~/working_space/air-closet/air-closet-styling-api/'
+alias draw.io=/Applications/draw.io.app/Contents/MacOS/draw.io
+alias drun='docker run -it --net=host --runtime=nvidia --shm-size=128gb -v /etc/group:/etc/group:ro -v /etc/passwd:/etc/passwd:ro -v /etc/shadow:/etc/shadow:ro -u $(id -u $USER):$(id -g $USER) -v $HOME:$HOME -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v /usr/share/fonts:/usr/share/fonts -e MINIO_ACCESS_KEY=kazuki -e MINIO_SECRET_KEY=3U9igRAi51M1ogJ/jdN8r1z9PRzkdJsjKiyTxz86 -e MLFLOW_S3_ENDPOINT_URL=http://data.jupiter.ai-ms.com -e AWS_ACCESS_KEY_ID=kazuki -e AWS_SECRET_ACCESS_KEY=3U9igRAi51M1ogJ/jdN8r1z9PRzkdJsjKiyTxz86'
 
 # function git(){hub "$@"} # for zsh
 eval "$(hub alias -s)" # for bashみたいだけどこっちのがうまくいってる
@@ -154,12 +195,18 @@ SAVEHIST=100000                     # 保存する履歴の数
 setopt share_history                # 同一ホストで動いているZshで履歴を共有
 
 export PGDATA=/usr/local/var/postgres
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
+export JAVA_HOME=`/usr/libexec/java_home -v 11`
+export GOPATH=$(go env GOPATH)
+export PATH=$PATH:$(go env GOPATH)/bin
+export PATH="/usr/local/opt/mongodb-community@3.6/bin:$PATH"
+export PATH=~/.local/bin:$PATH
 
-# added by Anaconda3 4.4.0 installer
-export PATH="/Users/kazuki/anaconda/bin:$PATH"
-
-export PATH="$(brew --prefix homebrew/core/php@7.1)/bin:$PATH"
-export PATH=$PATH:~/.nodebrew/current/bin
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 
 # -------------------------------------
 # キーバインド
@@ -189,3 +236,52 @@ function title {
     echo -ne "\033]0;"$*"\007"
 }
 export PATH="/usr/local/opt/llvm/bin:$PATH"
+
+# C-sを検索で使えるようにする
+stty stop undef
+
+# iTerm2 window/tab color commands
+#   Requires iTerm2 >= Build 1.0.0.20110804
+#   http://code.google.com/p/iterm2/wiki/ProprietaryEscapeCodes
+tab-color() {
+    echo -ne "\033]6;1;bg;red;brightness;$1\a"
+    echo -ne "\033]6;1;bg;green;brightness;$2\a"
+    echo -ne "\033]6;1;bg;blue;brightness;$3\a"
+}
+tab-reset() {
+    echo -ne "\033]6;1;bg;*;default\a"
+}
+tab-text() {
+    echo -ne "\033]0;$1\007"
+}
+
+# Change the color of the tab when using SSH
+# reset the color after the connection closes
+color-ssh() {
+    if [[ -n "$ITERM_SESSION_ID" ]]; then
+        trap "tab-color 22 23 30 && tab-text $(pwd | rev | awk -F \/ '{print $1}'| rev)" INT EXIT
+        if [[ "$*" =~ "production|ec2-.*compute-1" ]]; then
+            tab-color 255 0 0
+        else
+            tab-color 0 255 0
+        fi
+    fi
+    tab-text $*
+    ssh $*
+}
+compdef _ssh color-ssh=ssh
+
+alias ssh=color-ssh
+
+# mcdコマンドの定義
+mcd() {
+    mkdir -p "$1"
+    [ $? -eq 0 ] && cd "$1"
+}
+
+function chpwd() { echo -ne "\033]0;$(pwd | rev | awk -F \/ '{print $1}'| rev)\007"}
+
+# Dockerのコンテナ内にいる場合はプロンプトに表示
+if [ -f /.dockerenv ]; then
+    export PS1='\[(docker)\033[1;32m\]\u\[\033[00m\]:\[\033[1;34m\]\w\[\033[1;31m\]$(__git_ps1)\[\033[00m\] \$ '
+fi
